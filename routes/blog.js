@@ -1,0 +1,14 @@
+const express = require("express");
+const blogController = require("../controllers/blog");
+const { verifyToken, decodeTokenIfItExists } = require("../utils");
+const router = express.Router();
+router.get("/all", blogController.getAllBlogs);
+router.get("/:blogId", blogController.getBlogById);
+router.get("/", verifyToken, blogController.getOwnBlogs);
+router.post("/", verifyToken, blogController.postBlog);
+router.post("/:blogId", decodeTokenIfItExists, blogController.postComment);
+router.patch("/:blogId", verifyToken, blogController.updateBlog);
+router.delete("/:blogId", verifyToken, blogController.deleteBlog);
+router.patch("/:blogId/:commentId", verifyToken, blogController.updateComment);
+router.delete("/:blogId/:commentId", verifyToken, blogController.deleteComment);
+module.exports = router;
