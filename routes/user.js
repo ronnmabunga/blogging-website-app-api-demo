@@ -1,9 +1,10 @@
 const express = require("express");
 const userController = require("../controllers/user");
-const { verifyNoToken, verifyToken } = require("../utils");
+const { decodeToken } = require("../utils/authentication");
+const { validateNotLoggedIn, validateLoggedIn } = require("../utils/authorization");
 const router = express.Router();
-router.post("/register", verifyNoToken, userController.registerUser);
-router.post("/login", verifyNoToken, userController.loginUser);
-router.get("/details", verifyToken, userController.retrieveUserDetails);
-router.patch("/", verifyToken, userController.updateUser);
+router.post("/register", decodeToken, validateNotLoggedIn, userController.registerUser);
+router.post("/login", decodeToken, validateNotLoggedIn, userController.loginUser);
+router.get("/details", decodeToken, validateLoggedIn, userController.retrieveUserDetails);
+router.patch("/", decodeToken, validateLoggedIn, userController.updateUser);
 module.exports = router;

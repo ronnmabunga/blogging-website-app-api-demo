@@ -1,8 +1,9 @@
 const express = require("express");
 const messageController = require("../controllers/message");
-const { verifyToken, verifyAdminToken } = require("../utils");
+const { decodeToken } = require("../utils/authentication");
+const { validateAdminBFAC } = require("../utils/authorization");
 const router = express.Router();
-router.get("/", verifyToken, verifyAdminToken, messageController.getAllMessages);
+router.get("/", decodeToken, validateAdminBFAC, messageController.getAllMessages);
 router.post("/", messageController.postMessage);
-router.patch("/:messageId", verifyToken, verifyAdminToken, messageController.readMessage);
+router.patch("/:messageId", decodeToken, validateAdminBFAC, messageController.readMessage);
 module.exports = router;

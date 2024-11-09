@@ -1,6 +1,6 @@
 const Blog = require("../models/Blog");
 const { errorHandler } = require("../utils");
-const { isValidEmail } = require("../validations");
+const { isValidEmail } = require("../utils/validations");
 const { isValidObjectId } = require("mongoose");
 module.exports.getAllBlogs = async (req, res) => {
     let log = { name: "getAllBlogs", variables: {} };

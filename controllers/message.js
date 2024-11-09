@@ -1,6 +1,6 @@
 const Message = require("../models/Message");
 const { errorHandler } = require("../utils");
-const { isValidEmail } = require("../validations");
+const { isValidEmail } = require("../utils/validations");
 const { isValidObjectId } = require("mongoose");
 
 module.exports.getAllMessages = async (req, res) => {

@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const { errorHandler, createToken } = require("../utils");
-const { isValidPassword, isValidEmail } = require("../validations");
+const { isValidPassword, isValidEmail } = require("../utils/validations");
 module.exports.registerUser = async (req, res) => {
     let log = { name: "registerUser", variables: {} };
     req.log.middlewares.push(log);
