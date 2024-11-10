@@ -4,6 +4,8 @@ const userRoutes = require("./routes/user");
 const blogRoutes = require("./routes/blog");
 const messageRoutes = require("./routes/message");
 require("dotenv").config();
+const PORT = process.env.DEMO1_PORT;
+const MONGO_STRING = process.env.DEMO1_MONGO_STRING;
 const cors = require("cors");
 
 const app = express();
@@ -34,13 +36,13 @@ app.use("/users", userRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/messages", messageRoutes);
 
-mongoose.connect(process.env.MONGO_STRING);
+mongoose.connect(MONGO_STRING);
 mongoose.connection.once("open", () => console.log("Connected to database."));
 
 if (require.main === module) {
-    app.listen(process.env.PORT, () => {
-        console.log(`API is now online on port ${process.env.PORT}`);
+    app.listen(PORT, () => {
+        console.log(`API is now online on port ${PORT}`);
     });
 }
 
-module.exports = { app };
+module.exports = app;

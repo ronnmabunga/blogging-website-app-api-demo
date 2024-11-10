@@ -1,5 +1,5 @@
 require("dotenv").config();
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+const JWT_SECRET_KEY = process.env.DEMO1_JWT_SECRET_KEY;
 
 const checkValidUser = (decodedToken) => {
     try {

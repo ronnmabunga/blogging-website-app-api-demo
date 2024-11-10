@@ -2,6 +2,7 @@ const { isValidObjectId } = require("mongoose");
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const JWT_SECRET_KEY = process.env.DEMO1_JWT_SECRET_KEY;
 
 module.exports.isValidUser = async (user) => {
     let { _id } = user;
@@ -13,7 +14,7 @@ module.exports.isValidUser = async (user) => {
 };
 
 module.exports.createToken = async (user) => {
-    return jwt.sign(user.toObject(), process.env.JWT_SECRET_KEY);
+    return jwt.sign(user.toObject(), JWT_SECRET_KEY);
 };
 
 module.exports.verifyToken = async (req, res, next) => {
@@ -28,7 +29,7 @@ module.exports.verifyToken = async (req, res, next) => {
     }
     token = token.slice(7, token.length);
     log.variables["token"] = token;
-    jwt.verify(token, process.env.JWT_SECRET_KEY, async function (err, decodedToken) {
+    jwt.verify(token, JWT_SECRET_KEY, async function (err, decodedToken) {
         log.variables["err"] = err;
         log.variables["decodedToken"] = decodedToken;
         if (err) {
@@ -62,7 +63,7 @@ module.exports.decodeTokenIfItExists = async (req, res, next) => {
     }
     token = token.slice(7, token.length);
     log.variables["token"] = token;
-    jwt.verify(token, process.env.JWT_SECRET_KEY, async function (err, decodedToken) {
+    jwt.verify(token, JWT_SECRET_KEY, async function (err, decodedToken) {
         log.variables["err"] = err;
         log.variables["decodedToken"] = decodedToken;
         if (err) {
@@ -106,7 +107,7 @@ module.exports.verifyNoToken = async (req, res, next) => {
     if (typeof token === "string" && token.length > 7) {
         token = token.slice(7, token.length);
         log.variables["token"] = token;
-        jwt.verify(token, process.env.JWT_SECRET_KEY, async function (err, decodedToken) {
+        jwt.verify(token, JWT_SECRET_KEY, async function (err, decodedToken) {
             log.variables["err"] = err;
             log.variables["decodedToken"] = decodedToken;
             if (err) {

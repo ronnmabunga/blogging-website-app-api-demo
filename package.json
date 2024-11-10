@@ -1,6 +1,7 @@
 {
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "dev": "nodemon index.js"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
@@ -9,6 +10,15 @@
         "express": "^4.21.0",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.7.0",
+        "ronnmabunga-demo-apis": "file:..",
         "serverless-http": "^3.2.0"
-    }
+    },
+    "name": "blogging-website-app-api-demo",
+    "version": "1.0.0",
+    "main": "index.js",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {},
+    "description": ""
 }
