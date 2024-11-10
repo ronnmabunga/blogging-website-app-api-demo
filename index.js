@@ -5,7 +5,7 @@ const blogRoutes = require("./routes/blog");
 const messageRoutes = require("./routes/message");
 require("dotenv").config();
 const PORT = process.env.DEMO1_PORT;
-const MONGO_STRING = process.env.DEMO1_MONGO_STRING;
+const MONGO_STRING = `${process.env.DEMO1_MONGO_STRING}`;
 const morgan = require("morgan");
 const logger = require("./utils/logger");
 const cors = require("cors");

@@ -2,7 +2,7 @@ const { isValidObjectId } = require("mongoose");
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET_KEY = process.env.DEMO1_JWT_SECRET_KEY;
+const JWT_SECRET_KEY = `${process.env.DEMO1_JWT_SECRET_KEY}`;
 
 module.exports.isValidUser = async (user) => {
     let { _id } = user;

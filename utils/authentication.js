@@ -1,7 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const checkValidUser = require("./checkValidUser");
-const JWT_SECRET_KEY = process.env.DEMO1_JWT_SECRET_KEY;
+const JWT_SECRET_KEY = `${process.env.DEMO1_JWT_SECRET_KEY}`;
 
 const createToken = (payloadObj) => {
     return jwt.sign(payloadObj, JWT_SECRET_KEY);

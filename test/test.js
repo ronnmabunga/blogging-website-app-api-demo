@@ -3,7 +3,7 @@ const http = require("chai-http");
 const { connectDB, disconnectDB } = require("../utils/mongoDBConn");
 const User = require("../models/User");
 require("dotenv").config();
-const MONGO_STRING = process.env.DEMO1_MONGO_STRING;
+const MONGO_STRING = `${process.env.DEMO1_MONGO_STRING}`;
 chai.use(http);
 let app = require("../index");
 
