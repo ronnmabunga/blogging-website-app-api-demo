@@ -5,6 +5,6 @@ const { validateNotLoggedIn, validateLoggedIn } = require("../utils/authorizatio
 const router = express.Router();
 router.post("/register", decodeToken, validateNotLoggedIn, userController.registerUser);
 router.post("/login", decodeToken, validateNotLoggedIn, userController.loginUser);
-router.get("/details", decodeToken, validateLoggedIn, userController.retrieveUserDetails);
+router.get("/", decodeToken, validateLoggedIn, userController.retrieveUserDetails);
 router.patch("/", decodeToken, validateLoggedIn, userController.updateUser);
 module.exports = router;
