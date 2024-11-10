@@ -10,7 +10,7 @@ let app = require("../index");
 describe(`TESTS ON "/users"`, function () {
     let userToken;
     let adminToken;
-    this.timeout(60000);
+    this.timeout(30000);
     before(async () => {
         console.log("Tests starting:");
         await connectDB(MONGO_STRING);
@@ -51,7 +51,7 @@ describe(`TESTS ON "/users"`, function () {
         await disconnectDB();
         console.log("Testing ends");
     });
-    it(`POST ON "/users/register"`, (done) => {
+    it(`[Not Authenticated User] POST "/users/register"`, (done) => {
         chai.request(app)
             .post("/users/register")
             .type("json")
@@ -67,7 +67,24 @@ describe(`TESTS ON "/users"`, function () {
                 done();
             });
     });
-    it(`POST ON "/users/login"`, (done) => {
+    it(`[Authenticated User] POST "/users/register"`, (done) => {
+        chai.request(app)
+            .post("/users/register")
+            .type("json")
+            .send({
+                username: "NewUser",
+                email: "newuser@mail.com",
+                password: "pAs$w0rd",
+            })
+            .set("Authorization", `Bearer ${adminToken}`)
+            .end((err, res) => {
+                chai.expect(res.status).to.equal(403);
+                chai.expect(res.body).to.have.property("success").that.equals(false);
+                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                done();
+            });
+    });
+    it(`[Not Authenticated User] POST "/users/login"`, (done) => {
         chai.request(app)
             .post("/users/login")
             .type("json")
@@ -83,7 +100,33 @@ describe(`TESTS ON "/users"`, function () {
                 done();
             });
     });
-    it(`GET ON "/users"`, (done) => {
+    it(`[Authenticated User] POST "/users/login"`, (done) => {
+        chai.request(app)
+            .post("/users/login")
+            .type("json")
+            .send({
+                email: "newuser@mail.com",
+                password: "pAs$w0rd",
+            })
+            .set("Authorization", `Bearer ${adminToken}`)
+            .end((err, res) => {
+                chai.expect(res.status).to.equal(403);
+                chai.expect(res.body).to.have.property("success").that.equals(false);
+                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                done();
+            });
+    });
+    it(`[Not Authenticated User] GET "/users"`, (done) => {
+        chai.request(app)
+            .get("/users")
+            .end((err, res) => {
+                chai.expect(res.status).to.equal(403);
+                chai.expect(res.body).to.have.property("success").that.equals(false);
+                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                done();
+            });
+    });
+    it(`[Authenticated User] GET "/users"`, (done) => {
         chai.request(app)
             .get("/users")
             .set("Authorization", `Bearer ${adminToken}`)
@@ -95,7 +138,24 @@ describe(`TESTS ON "/users"`, function () {
                 done();
             });
     });
-    it(`PATCH on "/users"`, (done) => {
+    it(`[Not Authenticated User] PATCH "/users"`, (done) => {
+        let updated = {
+            username: "UpdatedMainUser",
+            email: "updatedmainuser@mail.com",
+            password: "pAs$w0rd",
+        };
+        chai.request(app)
+            .patch("/users")
+            .type("json")
+            .send(updated)
+            .end((err, res) => {
+                chai.expect(res.status).to.equal(403);
+                chai.expect(res.body).to.have.property("success").that.equals(false);
+                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                done();
+            });
+    });
+    it(`[Authenticated User] PATCH "/users"`, (done) => {
         let updated = {
             username: "UpdatedMainUser",
             email: "updatedmainuser@mail.com",
