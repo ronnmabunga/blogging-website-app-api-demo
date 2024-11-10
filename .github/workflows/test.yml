@@ -19,4 +19,8 @@ jobs:
             - name: Install dependencies
               run: npm install
             - name: Run Mocha tests
+              env:
+                  DEMO1_PORT: ${{ secrets.DEMO1_PORT }}
+                  DEMO1_MONGO_STRING: ${{ secrets.DEMO1_MONGO_STRING }}
+                  DEMO1_JWT_SECRET_KEY: ${{ secrets.DEMO1_JWT_SECRET_KEY }}
               run: npm test
