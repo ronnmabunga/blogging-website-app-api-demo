@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const { errorHandler, createToken } = require("../utils");
+const { createToken } = require("../utils/authentication");
 const { isValidPassword, isValidEmail } = require("../utils/validations");
 module.exports.registerUser = async (req, res, next) => {
     try {
@@ -49,7 +49,13 @@ module.exports.loginUser = async (req, res, next) => {
         if (!isPasswordCorrect) {
             return res.status(401).send({ error: "Access denied. Please provide valid credentials." });
         }
-        const token = await createToken(foundUser);
+        const token = createToken({
+            _id: foundUser._id,
+            username: foundUser.username,
+            email: foundUser.email,
+            isAdmin: foundUser.isAdmin,
+            imageLink: foundUser.imageLink,
+        });
         return res.status(200).send({ success: true, message: "User access granted.", access: token });
     } catch (error) {
         next(error);
