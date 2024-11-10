@@ -1,5 +1,5 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const { connectDB } = require("./utils/mongoDBConn");
 const userRoutes = require("./routes/user");
 const blogRoutes = require("./routes/blog");
 const messageRoutes = require("./routes/message");
@@ -31,10 +31,8 @@ app.use((err, req, res, next) => {
     res.status(statusCode).send({ error: errorMessage });
 });
 
-mongoose.connect(MONGO_STRING);
-mongoose.connection.once("open", () => console.log("Connected to database."));
-
 if (require.main === module) {
+    connectDB(MONGO_STRING);
     app.listen(PORT, () => {
         console.log(`API is now online on port ${PORT}`);
     });
