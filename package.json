@@ -10,8 +10,10 @@
         "express": "^4.21.0",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.7.0",
+        "morgan": "^1.10.0",
         "ronnmabunga-demo-apis": "file:..",
-        "serverless-http": "^3.2.0"
+        "serverless-http": "^3.2.0",
+        "winston": "^3.17.0"
     },
     "name": "blogging-website-app-api-demo",
     "version": "1.0.0",
@@ -19,6 +21,5 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {},
     "description": ""
 }
