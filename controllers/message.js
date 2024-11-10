@@ -11,8 +11,7 @@ module.exports.getAllMessages = async (req, res, next) => {
         }
         return res.status(200).send({ success: true, message: "Messages retrieved.", messages: foundMessages });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.postMessage = async (req, res, next) => {
@@ -38,8 +37,7 @@ module.exports.postMessage = async (req, res, next) => {
         let savedMessage = await newMessage.save();
         res.status(201).send({ success: true, message: "Message created.", message: savedMessage });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.readMessage = async (req, res, next) => {
@@ -59,7 +57,6 @@ module.exports.readMessage = async (req, res, next) => {
         let updatedMessage = await foundMessage.save();
         res.status(200).send({ success: true, message: "Message updated successfully", message: updatedMessage });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };

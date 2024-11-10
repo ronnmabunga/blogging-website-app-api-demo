@@ -25,8 +25,7 @@ module.exports.registerUser = async (req, res, next) => {
         let savedUser = await newUser.save();
         res.status(201).send({ success: true, message: "Registered Successfully" });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.loginUser = async (req, res, next) => {
@@ -53,8 +52,7 @@ module.exports.loginUser = async (req, res, next) => {
         const token = await createToken(foundUser);
         return res.status(200).send({ success: true, message: "User access granted.", access: token });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.retrieveUserDetails = async (req, res, next) => {
@@ -67,8 +65,7 @@ module.exports.retrieveUserDetails = async (req, res, next) => {
         foundUser.password = "";
         return res.status(200).send({ success: true, message: "User data found.", user: foundUser });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.updateUser = async (req, res, next) => {
@@ -99,7 +96,6 @@ module.exports.updateUser = async (req, res, next) => {
         updatedUser.password = "";
         res.status(200).send({ success: true, message: "User updated successfully.", user: updatedUser });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };

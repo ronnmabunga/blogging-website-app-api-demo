@@ -7,8 +7,7 @@ const checkValidUser = (decodedToken) => {
         const foundUser = users.find((user) => user.id === id);
         return foundUser;
     } catch (error) {
-        console.error("Passed to error handler.");
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 const createToken = async (data) => {
@@ -40,8 +39,7 @@ const decodeToken = async (req, res, next) => {
             }
         });
     } catch (error) {
-        console.error("Passed to error handler.");
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 

@@ -24,6 +24,13 @@ app.use("/users", userRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/messages", messageRoutes);
 
+app.use((err, req, res, next) => {
+    logger.error(`Error encountered: ${err.message}`);
+    const statusCode = err.status || 500;
+    const errorMessage = err.message || "An unexpected error has occurred.";
+    res.status(statusCode).send({ error: errorMessage });
+});
+
 mongoose.connect(MONGO_STRING);
 mongoose.connection.once("open", () => console.log("Connected to database."));
 

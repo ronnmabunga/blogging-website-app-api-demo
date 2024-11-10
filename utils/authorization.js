@@ -15,8 +15,7 @@ const validateNotLoggedIn = (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.error("Passed to error handler.");
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 const validateLoggedIn = (req, res, next) => {
@@ -27,8 +26,7 @@ const validateLoggedIn = (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.error("Passed to error handler.");
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 
@@ -45,8 +43,7 @@ const validateAdminBFAC = (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.error("Passed to error handler.");
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 const validateNotAdminBFAC = (req, res, next) => {
@@ -61,8 +58,7 @@ const validateNotAdminBFAC = (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.error("Passed to error handler.");
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 
@@ -80,8 +76,7 @@ const validateRoleRBAC = (allowedRoles) => {
             }
             next();
         } catch (error) {
-            console.error("Passed to error handler.");
-            errorHandler(error, req, res);
+            next(error);
         }
     };
 };
@@ -98,8 +93,7 @@ const validateAdminRBAC = (adminRoles) => {
             }
             next();
         } catch (error) {
-            console.error("Passed to error handler.");
-            errorHandler(error, req, res);
+            next(error);
         }
     };
 };
@@ -116,8 +110,7 @@ const validateNotAdminRBAC = (adminRoles) => {
             }
             next();
         } catch (error) {
-            console.error("Passed to error handler.");
-            errorHandler(error, req, res);
+            next(error);
         }
     };
 };

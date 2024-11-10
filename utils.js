@@ -131,13 +131,3 @@ module.exports.verifyNoToken = async (req, res, next) => {
         next();
     }
 };
-
-module.exports.errorHandler = async (error, req, res, next) => {
-    let log = { name: "errorHandler", variables: {} };
-    req.log.middlewares.push(log);
-    const statusCode = error.status || 500;
-    const errorMessage = error.message || "An unexpected error has occurred.";
-    log.variables["error"] = error;
-    req.log = { ...req.log, statusCode: statusCode, level: "error" };
-    res.status(statusCode).send({ error: errorMessage });
-};

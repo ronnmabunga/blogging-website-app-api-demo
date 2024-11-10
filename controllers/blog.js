@@ -1,5 +1,4 @@
 const Blog = require("../models/Blog");
-const { errorHandler } = require("../utils");
 const { isValidEmail } = require("../utils/validations");
 const { isValidObjectId } = require("mongoose");
 module.exports.getAllBlogs = async (req, res, next) => {
@@ -10,8 +9,7 @@ module.exports.getAllBlogs = async (req, res, next) => {
         }
         return res.status(200).send({ success: true, message: "Blogs retrieved.", blogs: foundBlogs });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.getBlogById = async (req, res, next) => {
@@ -26,8 +24,7 @@ module.exports.getBlogById = async (req, res, next) => {
         }
         return res.status(200).send({ success: true, message: "Blog retrieved.", blog: foundBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.getOwnBlogs = async (req, res, next) => {
@@ -39,8 +36,7 @@ module.exports.getOwnBlogs = async (req, res, next) => {
         }
         return res.status(200).send({ success: true, message: "Blogs retrieved.", blogs: foundBlogs });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.postBlog = async (req, res, next) => {
@@ -79,8 +75,7 @@ module.exports.postBlog = async (req, res, next) => {
         let savedBlog = await newBlog.save();
         res.status(201).send({ success: true, message: "Blog created.", blog: savedBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.postComment = async (req, res, next) => {
@@ -110,8 +105,7 @@ module.exports.postComment = async (req, res, next) => {
         let savedBlog = await foundBlog.save();
         res.status(201).send({ success: true, message: "Comment added.", blog: savedBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.updateComment = async (req, res, next) => {
@@ -146,8 +140,7 @@ module.exports.updateComment = async (req, res, next) => {
         let savedBlog = await foundBlog.save();
         res.status(200).send({ success: true, message: "Comment updated.", blog: savedBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.updateBlog = async (req, res, next) => {
@@ -180,8 +173,7 @@ module.exports.updateBlog = async (req, res, next) => {
         let updatedBlog = await foundBlog.save();
         res.status(200).send({ success: true, message: "Blog updated successfully", blog: updatedBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.deleteBlog = async (req, res, next) => {
@@ -201,8 +193,7 @@ module.exports.deleteBlog = async (req, res, next) => {
         let deletedBlog = await Blog.findByIdAndDelete(blogId);
         res.status(200).send({ success: true, message: "Blog deleted successfully", blog: deletedBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
 module.exports.deleteComment = async (req, res, next) => {
@@ -230,7 +221,6 @@ module.exports.deleteComment = async (req, res, next) => {
         let updatedBlog = await foundBlog.save();
         res.status(200).send({ success: true, message: "Comment deleted successfully", blog: updatedBlog });
     } catch (error) {
-        log.variables["message"] = "Passed to error handler.";
-        errorHandler(error, req, res);
+        next(error);
     }
 };
