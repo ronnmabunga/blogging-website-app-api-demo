@@ -91,8 +91,9 @@ module.exports.updateUser = async (req, res, next) => {
         if (typeof username !== "undefined" && typeof username !== "string") {
             return res.status(400).send({ error: "Invalid username" });
         }
+        let hashedPassword;
         if (typeof password !== "undefined") {
-            const hashedPassword = bcrypt.hashSync(password, 10);
+            hashedPassword = bcrypt.hashSync(password, 10);
             foundUser.password = hashedPassword || foundUser.password;
         }
         foundUser.email = email || foundUser.email;
