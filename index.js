@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const corsOptions = { origin: ["https://wanderwords-blog-app-portfolio.vercel.app", "https://wanderwords-blog-app-portfolio-ronnmabungas-projects.vercel.app", "https://wanderwords-blog-app-portfolio-git-main-ronnmabungas-projects.vercel.app"], credentials: true };
+const corsOptions = { origin: ["https://wanderwords-blog-app-portfolio.vercel.app"], credentials: true };
 app.use(cors(corsOptions));
 
 app.use(morgan("combined", { stream: logger.stream }));
