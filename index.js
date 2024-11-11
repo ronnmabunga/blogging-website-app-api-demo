@@ -31,12 +31,12 @@ app.use((err, req, res, next) => {
     res.status(statusCode).send({ success: false, message: errorMessage });
 });
 
+connectDB(MONGO_STRING);
+
 if (require.main === module) {
-    connectDB(MONGO_STRING);
     app.listen(PORT, () => {
         logger.info(`Blog API: Now online on port ${PORT}`);
     });
 } else {
-    // logger.turnOffConsoleLogging();
     module.exports = app;
 }

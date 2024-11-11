@@ -7,6 +7,7 @@ require("dotenv").config();
 const MONGO_STRING = `${process.env.DEMO1_MONGO_STRING}`;
 chai.use(http);
 let app = require("../index");
+// logger.turnOffConsoleLogging();
 
 describe(`API Tests`, function () {
     let userToken;
@@ -24,7 +25,7 @@ describe(`API Tests`, function () {
             })
             .end((err, res) => {
                 adminToken = res.body.access;
-                // console.log("adminToken: ", adminToken);
+                console.log("adminToken: ", adminToken);
             });
         chai.request(app)
             .post("/users/login")
@@ -35,7 +36,7 @@ describe(`API Tests`, function () {
             })
             .end((err, res) => {
                 userToken = res.body.access;
-                // console.log("userToken: ", userToken);
+                console.log("userToken: ", userToken);
             });
     });
     after(async () => {
