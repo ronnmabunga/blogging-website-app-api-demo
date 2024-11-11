@@ -16,28 +16,18 @@ describe(`API Tests`, function () {
     before(async () => {
         logger.info("Tests starting:");
         await connectDB(MONGO_STRING);
-        chai.request(app)
-            .post("/users/login")
-            .type("json")
-            .send({
-                email: "mainadmin@mail.com",
-                password: "pAs$w0rd",
-            })
-            .end((err, res) => {
-                adminToken = res.body.access;
-                console.log("adminToken: ", adminToken);
-            });
-        chai.request(app)
-            .post("/users/login")
-            .type("json")
-            .send({
-                email: "mainuser@mail.com",
-                password: "pAs$w0rd",
-            })
-            .end((err, res) => {
-                userToken = res.body.access;
-                console.log("userToken: ", userToken);
-            });
+        const userResult = await chai.request(app).post("/users/login").type("json").send({
+            email: "mainuser@mail.com",
+            password: "pAs$w0rd",
+        });
+        userToken = userResult.body.access;
+        // console.log("userToken: ", userToken);
+        const adminResult = await chai.request(app).post("/users/login").type("json").send({
+            email: "mainadmin@mail.com",
+            password: "pAs$w0rd",
+        });
+        adminToken = adminResult.body.access;
+        // console.log("adminToken: ", adminToken);
     });
     after(async () => {
         await chai
