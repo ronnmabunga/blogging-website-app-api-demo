@@ -1,5 +1,4 @@
 const Message = require("../models/Message");
-const { errorHandler } = require("../utils");
 const { isValidEmail } = require("../utils/validations");
 const { isValidObjectId } = require("mongoose");
 
@@ -40,7 +39,7 @@ module.exports.postMessage = async (req, res, next) => {
         next(error);
     }
 };
-module.exports.readMessage = async (req, res, next) => {
+module.exports.markMessageAsRead = async (req, res, next) => {
     try {
         let { messageId } = req.params;
         if (typeof messageId === "undefined") {
