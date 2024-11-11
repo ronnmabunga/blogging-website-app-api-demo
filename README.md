@@ -1,4 +1,4 @@
-# blogging-website-app-api-demo
+# expressjs-mongodb-mrc-blogging-api-demo
 
 ## Description
 
