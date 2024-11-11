@@ -16,7 +16,7 @@
         "serverless-http": "^3.2.0",
         "winston": "^3.17.0"
     },
-    "name": "blogging-website-app-api-demo",
+    "name": "expressjs-mongodb-mrc-blogging-api-demo",
     "version": "1.0.0",
     "main": "index.js",
     "keywords": [],
@@ -24,8 +24,8 @@
     "license": "ISC",
     "description": "",
     "devDependencies": {
-        "mocha": "^10.8.2",
         "chai": "^4.3.10",
-        "chai-http": "^4.4.0"
+        "chai-http": "^4.4.0",
+        "mocha": "^10.8.2"
     }
 }
