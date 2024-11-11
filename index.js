@@ -36,6 +36,7 @@ if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`API is now online on port ${PORT}`);
     });
+} else {
+    logger.turnOffConsoleLogging();
+    module.exports = app;
 }
-
-module.exports = app;
