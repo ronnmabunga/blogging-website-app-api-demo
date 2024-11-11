@@ -1,3 +1,4 @@
+const logger = require("./logger");
 /*
     Request object is expected to have a field `user` that has is an object that contains the authenticated user information.
     If the field `user` is not found in the request object, the module assumes that the user is not authenticated.
@@ -10,7 +11,7 @@
 const validateNotLoggedIn = (req, res, next) => {
     try {
         if (req.user) {
-            console.log("Already logged in. User Authorization Failed.");
+            logger.info("Already logged in. User Authorization Failed.");
             return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
         }
         next();
@@ -21,7 +22,7 @@ const validateNotLoggedIn = (req, res, next) => {
 const validateLoggedIn = (req, res, next) => {
     try {
         if (!req.user) {
-            console.log("User not logged in. User Authorization Failed.");
+            logger.info("User not logged in. User Authorization Failed.");
             return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
         }
         next();
@@ -34,11 +35,11 @@ const validateLoggedIn = (req, res, next) => {
 const validateAdminBFAC = (req, res, next) => {
     try {
         if (!req.user) {
-            console.log("Authentication Failed.");
+            logger.info("Authentication Failed.");
             return res.status(401).send({ success: false, message: "Authentication Failed. Please provide valid credentials." });
         }
         if (!req.user.isAdmin) {
-            console.log("Admin access required.");
+            logger.info("Admin access required.");
             return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
         }
         next();
@@ -49,11 +50,11 @@ const validateAdminBFAC = (req, res, next) => {
 const validateNotAdminBFAC = (req, res, next) => {
     try {
         if (!req.user) {
-            console.log("Authentication Failed.");
+            logger.info("Authentication Failed.");
             return res.status(401).send({ success: false, message: "Authentication Failed. Please provide valid credentials." });
         }
         if (req.user.isAdmin) {
-            console.log("Admins cannot perform this action.");
+            logger.info("Admins cannot perform this action.");
             return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
         }
         next();
@@ -67,11 +68,11 @@ const validateRoleRBAC = (allowedRoles) => {
     return function (req, res, next) {
         try {
             if (!req.user) {
-                console.log("Authentication Failed.");
+                logger.info("Authentication Failed.");
                 return res.status(401).send({ success: false, message: "Authentication Failed. Please provide valid credentials." });
             }
             if (!allowedRoles.some((allowedRole) => req.user.roles.includes(allowedRole))) {
-                console.log("User does not have the required role to perform this action.");
+                logger.info("User does not have the required role to perform this action.");
                 return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
             }
             next();
@@ -84,11 +85,11 @@ const validateAdminRBAC = (adminRoles) => {
     return function (req, res, next) {
         try {
             if (!req.user) {
-                console.log("Authentication Failed.");
+                logger.info("Authentication Failed.");
                 return res.status(401).send({ success: false, message: "Authentication Failed. Please provide valid credentials." });
             }
             if (!adminRoles.some((adminRole) => req.user.roles.includes(adminRole))) {
-                console.log("Admin access required.");
+                logger.info("Admin access required.");
                 return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
             }
             next();
@@ -101,11 +102,11 @@ const validateNotAdminRBAC = (adminRoles) => {
     return function (req, res, next) {
         try {
             if (!req.user) {
-                console.log("Authentication Failed.");
+                logger.info("Authentication Failed.");
                 return res.status(401).send({ success: false, message: "Authentication Failed. Please provide valid credentials." });
             }
             if (adminRoles.some((adminRole) => req.user.roles.includes(adminRole))) {
-                console.log("Admins cannot perform this action.");
+                logger.info("Admins cannot perform this action.");
                 return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
             }
             next();

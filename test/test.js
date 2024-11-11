@@ -1,5 +1,6 @@
 const chai = require("chai");
 const http = require("chai-http");
+const logger = require("../utils/logger");
 const { connectDB, disconnectDB } = require("../utils/mongoDBConn");
 const User = require("../models/User");
 require("dotenv").config();
@@ -12,7 +13,7 @@ describe(`TESTS ON "/users"`, function () {
     let adminToken;
     this.timeout(30000);
     before(async () => {
-        console.log("Tests starting:");
+        logger.info("Tests starting:");
         await connectDB(MONGO_STRING);
         chai.request(app)
             .post("/users/login")
@@ -23,7 +24,7 @@ describe(`TESTS ON "/users"`, function () {
             })
             .end((err, res) => {
                 adminToken = res.body.access;
-                console.log("adminToken: ", adminToken);
+                // console.log("adminToken: ", adminToken);
             });
         chai.request(app)
             .post("/users/login")
@@ -34,7 +35,7 @@ describe(`TESTS ON "/users"`, function () {
             })
             .end((err, res) => {
                 userToken = res.body.access;
-                console.log("userToken: ", userToken);
+                // console.log("userToken: ", userToken);
             });
     });
     after(async () => {
@@ -49,7 +50,7 @@ describe(`TESTS ON "/users"`, function () {
             })
             .set("Authorization", `Bearer ${userToken}`);
         await disconnectDB();
-        console.log("Testing ends");
+        logger.info("Testing ends");
     });
     it(`[Not Authenticated User] POST "/users/register"`, (done) => {
         chai.request(app)

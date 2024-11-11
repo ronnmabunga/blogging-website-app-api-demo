@@ -34,7 +34,7 @@ app.use((err, req, res, next) => {
 if (require.main === module) {
     connectDB(MONGO_STRING);
     app.listen(PORT, () => {
-        console.log(`API is now online on port ${PORT}`);
+        logger.info(`API is now online on port ${PORT}`);
     });
 } else {
     logger.turnOffConsoleLogging();

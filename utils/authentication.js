@@ -1,5 +1,6 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const logger = require("./logger");
 const checkValidUser = require("./checkValidUser");
 const JWT_SECRET_KEY = `${process.env.DEMO1_JWT_SECRET_KEY}`;
 
@@ -10,23 +11,23 @@ const decodeToken = async (req, res, next) => {
     try {
         let token = req.headers.authorization;
         if (typeof token !== "string" || token.length < 8) {
-            console.log("No Token Found. Authentication Failed.");
+            logger.info("No Token Found. Authentication Failed.");
             next();
             return;
         }
         token = token.slice(7, token.length);
         jwt.verify(token, JWT_SECRET_KEY, async function (err, decodedToken) {
             if (err) {
-                console.log("Token Verification Failed. Authentication Failed.");
+                logger.info("Token Verification Failed. Authentication Failed.");
                 next();
             } else {
                 let isValidUser = await checkValidUser(decodedToken, next);
                 if (isValidUser) {
-                    console.log("Token Verification Successful. User Verification Successful.");
+                    logger.info("Token Verification Successful. User Verification Successful.");
                     req.user = decodedToken;
                     next();
                 } else {
-                    console.log("Token Verification Successful. User Verification Failed.");
+                    logger.info("Token Verification Successful. User Verification Failed.");
                     next();
                 }
             }

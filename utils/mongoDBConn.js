@@ -1,12 +1,12 @@
-const logger = require("./logger");
 const mongoose = require("mongoose");
+const logger = require("./logger");
 
 const connectDB = async (uri) => {
     try {
         await mongoose.connect(uri);
         logger.info("Connected to MongoDB");
     } catch (err) {
-        console.error(err.message);
+        logger.error(err.message);
         process.exit(1);
     }
 };
