@@ -8,7 +8,7 @@ const MONGO_STRING = `${process.env.DEMO1_MONGO_STRING}`;
 chai.use(http);
 let app = require("../index");
 
-describe(`TESTS ON "/users"`, function () {
+describe(`API Tests`, function () {
     let userToken;
     let adminToken;
     this.timeout(30000);
@@ -52,129 +52,375 @@ describe(`TESTS ON "/users"`, function () {
         await disconnectDB();
         logger.info("Testing ends");
     });
-    it(`[Not Authenticated User] POST "/users/register"`, (done) => {
-        chai.request(app)
-            .post("/users/register")
-            .type("json")
-            .send({
-                username: "NewUser",
-                email: "newuser@mail.com",
-                password: "pAs$w0rd",
-            })
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(201);
-                chai.expect(res.body).to.have.property("success").that.equals(true);
-                chai.expect(res.body).to.have.property("message").that.equals("Registered Successfully");
-                done();
+    describe(`Tests on "/users"`, function () {
+        describe(`Correct Input Tests`, function () {
+            it(`[201 | NoAuth | POST "/users/register" | Correct Inputs      ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser",
+                        email: "newuser@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Registered Successfully");
+                        done();
+                    });
             });
-    });
-    it(`[Authenticated User] POST "/users/register"`, (done) => {
-        chai.request(app)
-            .post("/users/register")
-            .type("json")
-            .send({
-                username: "NewUser",
-                email: "newuser@mail.com",
-                password: "pAs$w0rd",
-            })
-            .set("Authorization", `Bearer ${adminToken}`)
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(403);
-                chai.expect(res.body).to.have.property("success").that.equals(false);
-                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
-                done();
+            it(`[200 | NoAuth | POST "/users/login"    | Correct Inputs      ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "newuser@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("User access granted.");
+                        chai.expect(res.body).to.have.property("access").that.is.a("string");
+                        done();
+                    });
             });
-    });
-    it(`[Not Authenticated User] POST "/users/login"`, (done) => {
-        chai.request(app)
-            .post("/users/login")
-            .type("json")
-            .send({
-                email: "newuser@mail.com",
-                password: "pAs$w0rd",
-            })
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(200);
-                chai.expect(res.body).to.have.property("success").that.equals(true);
-                chai.expect(res.body).to.have.property("message").that.equals("User access granted.");
-                chai.expect(res.body).to.have.property("access").that.is.a("string");
-                done();
+            it(`[200 | Auth   | GET "/users"           |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/users")
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("User data found.");
+                        chai.expect(res.body).to.have.property("user").that.is.a("object");
+                        done();
+                    });
             });
-    });
-    it(`[Authenticated User] POST "/users/login"`, (done) => {
-        chai.request(app)
-            .post("/users/login")
-            .type("json")
-            .send({
-                email: "newuser@mail.com",
-                password: "pAs$w0rd",
-            })
-            .set("Authorization", `Bearer ${adminToken}`)
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(403);
-                chai.expect(res.body).to.have.property("success").that.equals(false);
-                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
-                done();
+            it(`[200 | Auth   | PATCH "/users"         | Correct Inputs      ]`, (done) => {
+                let updated = {
+                    username: "UpdatedMainUser",
+                    email: "updatedmainuser@mail.com",
+                    password: "pAs$w0rd",
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("User updated successfully.");
+                        chai.expect(res.body).to.have.property("user").that.is.a("object");
+                        chai.expect(res.body.user).to.have.property("username").that.equals(updated.username);
+                        chai.expect(res.body.user).to.have.property("email").that.equals(updated.email);
+                        done();
+                    });
             });
-    });
-    it(`[Not Authenticated User] GET "/users"`, (done) => {
-        chai.request(app)
-            .get("/users")
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(403);
-                chai.expect(res.body).to.have.property("success").that.equals(false);
-                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
-                done();
+        });
+        describe(`Authorization Tests`, function () {
+            it(`[403 | Auth   | POST "/users/register" | Correct Inputs      ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser",
+                        email: "newuser@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                        done();
+                    });
             });
-    });
-    it(`[Authenticated User] GET "/users"`, (done) => {
-        chai.request(app)
-            .get("/users")
-            .set("Authorization", `Bearer ${adminToken}`)
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(200);
-                chai.expect(res.body).to.have.property("success").that.equals(true);
-                chai.expect(res.body).to.have.property("message").that.equals("User data found.");
-                chai.expect(res.body).to.have.property("user").that.is.a("object");
-                done();
+            it(`[403 | Auth   | POST "/users/login"    | Correct Inputs      ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "newuser@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                        done();
+                    });
             });
-    });
-    it(`[Not Authenticated User] PATCH "/users"`, (done) => {
-        let updated = {
-            username: "UpdatedMainUser",
-            email: "updatedmainuser@mail.com",
-            password: "pAs$w0rd",
-        };
-        chai.request(app)
-            .patch("/users")
-            .type("json")
-            .send(updated)
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(403);
-                chai.expect(res.body).to.have.property("success").that.equals(false);
-                chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
-                done();
+            it(`[403 | NoAuth | GET "/users"           |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/users")
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                        done();
+                    });
             });
-    });
-    it(`[Authenticated User] PATCH "/users"`, (done) => {
-        let updated = {
-            username: "UpdatedMainUser",
-            email: "updatedmainuser@mail.com",
-            password: "pAs$w0rd",
-        };
-        chai.request(app)
-            .patch("/users")
-            .type("json")
-            .send(updated)
-            .set("Authorization", `Bearer ${userToken}`)
-            .end((err, res) => {
-                chai.expect(res.status).to.equal(200);
-                chai.expect(res.body).to.have.property("success").that.equals(true);
-                chai.expect(res.body).to.have.property("message").that.equals("User updated successfully.");
-                chai.expect(res.body).to.have.property("user").that.is.a("object");
-                chai.expect(res.body.user).to.have.property("username").that.equals(updated.username);
-                chai.expect(res.body.user).to.have.property("email").that.equals(updated.email);
-                done();
+            it(`[403 | NoAuth | PATCH "/users"         | Correct Inputs      ]`, (done) => {
+                let updated = {
+                    username: "UpdatedMainUser",
+                    email: "updatedmainuser@mail.com",
+                    password: "pAs$w0rd",
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                        done();
+                    });
             });
+        });
+        describe(`Missing Input Tests`, function () {
+            it(`[201 | NoAuth | POST "/users/register" | Missing username    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        email: "newuser2@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Registered Successfully");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/register" | Missing email       ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser3",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Required inputs missing");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/register" | Missing password    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser4",
+                        email: "newuser4@mail.com",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Required inputs missing");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/login"    | Missing email       ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Required inputs missing");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/login"    | Missing password    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "newuser@mail.com",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Required inputs missing");
+                        done();
+                    });
+            });
+        });
+        describe(`Invalid Input Tests`, function () {
+            it(`[400 | NoAuth | POST "/users/register" | Non-string username ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: true,
+                        email: "newuser5@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid username");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/register" | Non-string email    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser6",
+                        email: true,
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/register" | Invalid email       ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser7",
+                        email: "newuser7@$mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/register" | Non-string password ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser8",
+                        email: "newuser8@mail.com",
+                        password: true,
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid password");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/register" | Invalid password    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/register")
+                    .type("json")
+                    .send({
+                        username: "NewUser9",
+                        email: "newuser9@mail.com",
+                        password: "password",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid password");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/login"    | Non-string email    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: true,
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/login"    | Invalid email       ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "newuser@$mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth | POST "/users/login"    | Non-string password ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "newuser@mail.com",
+                        password: true,
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid password");
+                        done();
+                    });
+            });
+        });
+        describe(`Failure Tests`, function () {
+            // Inexistent email
+            // Incorrect password
+            // describe(`Not Yet Implemented`, function () {
+            //     it(`[409 | NoAuth | POST "/users/register" | Duplicate username  ]`, (done) => {
+            //         chai.request(app)
+            //             .post("/users/register")
+            //             .type("json")
+            //             .send({
+            //                 username: "NewUser",
+            //                 email: "newuser10@mail.com",
+            //                 password: "pAs$w0rd",
+            //             })
+            //             .end((err, res) => {
+            //                 chai.expect(res.status).to.equal(409);
+            //                 chai.expect(res.body).to.have.property("success").that.equals(false);
+            //                 chai.expect(res.body).to.have.property("message").that.equals("Duplicate username found");
+            //                 done();
+            //             });
+            //     });
+            //     it(`[409 | NoAuth | POST "/users/register" | Duplicate email     ]`, (done) => {
+            //         chai.request(app)
+            //             .post("/users/register")
+            //             .type("json")
+            //             .send({
+            //                 username: "NewUser10",
+            //                 email: "newuser@mail.com",
+            //                 password: "pAs$w0rd",
+            //             })
+            //             .end((err, res) => {
+            //                 chai.expect(res.status).to.equal(409);
+            //                 chai.expect(res.body).to.have.property("success").that.equals(false);
+            //                 chai.expect(res.body).to.have.property("message").that.equals("Duplicate email found");
+            //                 done();
+            //             });
+            //     });
+            // });
+        });
     });
 });
