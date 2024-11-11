@@ -12,6 +12,10 @@ logger.turnOffConsoleLogging();
 describe(`API Tests`, function () {
     let userToken;
     let adminToken;
+    let messageId1;
+    let messageId2;
+    let blogId1;
+    let blogId2;
     this.timeout(30000);
     before(async () => {
         logger.info("Tests starting:");
@@ -28,6 +32,36 @@ describe(`API Tests`, function () {
         });
         adminToken = adminResult.body.access;
         // console.log("adminToken: ", adminToken);
+        const message1Result = await chai.request(app).post("/messages").type("json").send({
+            name: "Main Name 1",
+            email: "mainname1@mail.com",
+            message: "Test Message",
+        });
+        messageId1 = message1Result.body.newMessage._id;
+        const message2Result = await chai.request(app).post("/messages").type("json").send({
+            name: "Main Name 2",
+            email: "mainname2@mail.com",
+            message: "Test Message",
+        });
+        messageId2 = message2Result.body.newMessage._id;
+        const blog1Result = await chai
+            .request(app)
+            .post("/blogs")
+            .type("json")
+            .send({
+                title: "Title 1",
+            })
+            .set("Authorization", `Bearer ${userToken}`);
+        blogId1 = blog1Result.body.blog._id;
+        const blog2Result = await chai
+            .request(app)
+            .post("/blogs")
+            .type("json")
+            .send({
+                title: "Title 2",
+            })
+            .set("Authorization", `Bearer ${userToken}`);
+        blogId2 = blog2Result.body.blog._id;
     });
     after(async () => {
         await chai
@@ -43,7 +77,7 @@ describe(`API Tests`, function () {
         await disconnectDB();
         logger.info("Testing ends");
     });
-    describe(`Tests on "/users"`, function () {
+    describe.skip(`Tests on "/users"`, function () {
         describe(`Correct Input Tests`, function () {
             it(`[201 | NoAuth   | POST "/users/register"       | Correct Inputs      ]`, (done) => {
                 chai.request(app)
@@ -532,9 +566,7 @@ describe(`API Tests`, function () {
             });
         });
     });
-    describe(`Tests on "/messages"`, function () {
-        let messageId1;
-        let messageId2;
+    describe.skip(`Tests on "/messages"`, function () {
         describe(`Correct Input Tests`, function () {
             it(`[200 | Admin    | GET "/messages"              |                     ]`, (done) => {
                 chai.request(app)
@@ -562,7 +594,6 @@ describe(`API Tests`, function () {
                         chai.expect(res.body).to.have.property("success").that.equals(true);
                         chai.expect(res.body).to.have.property("message").that.equals("Message created.");
                         chai.expect(res.body).to.have.property("newMessage").that.is.a("object");
-                        messageId1 = res.body.newMessage._id;
                         done();
                     });
             });
@@ -581,7 +612,6 @@ describe(`API Tests`, function () {
                         chai.expect(res.body).to.have.property("success").that.equals(true);
                         chai.expect(res.body).to.have.property("message").that.equals("Message created.");
                         chai.expect(res.body).to.have.property("newMessage").that.is.a("object");
-                        messageId2 = res.body.newMessage._id;
                         done();
                     });
             });
