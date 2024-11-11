@@ -18,16 +18,16 @@ module.exports.postMessage = async (req, res, next) => {
     try {
         let { name, email, message } = req.body;
         if (typeof email === "undefined" || typeof message === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (typeof message !== "string") {
-            return res.status(400).send({ error: "Invalid message" });
+            return res.status(400).send({ success: false, message: "Invalid message" });
         }
         if (typeof email !== "string" || !isValidEmail(email)) {
-            return res.status(400).send({ error: "Invalid email" });
+            return res.status(400).send({ success: false, message: "Invalid email" });
         }
         if (typeof name !== "undefined" && typeof name !== "string") {
-            return res.status(400).send({ error: "Invalid name" });
+            return res.status(400).send({ success: false, message: "Invalid name" });
         }
         let newMessage = new Message({
             name: name,
@@ -44,14 +44,14 @@ module.exports.readMessage = async (req, res, next) => {
     try {
         let { messageId } = req.params;
         if (typeof messageId === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (!isValidObjectId(messageId)) {
-            return res.status(404).send({ error: "No message found." });
+            return res.status(404).send({ success: false, message: "No message found." });
         }
         let foundMessage = await Message.findById(messageId);
         if (!foundMessage) {
-            return res.status(404).send({ error: "No message found." });
+            return res.status(404).send({ success: false, message: "No message found." });
         }
         foundMessage.isRead = true;
         let updatedMessage = await foundMessage.save();

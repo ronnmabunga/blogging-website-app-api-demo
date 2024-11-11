@@ -16,11 +16,11 @@ module.exports.getBlogById = async (req, res, next) => {
     try {
         let { blogId } = req.params;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         const foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         return res.status(200).send({ success: true, message: "Blog retrieved.", blog: foundBlog });
     } catch (error) {
@@ -48,22 +48,22 @@ module.exports.postBlog = async (req, res, next) => {
             posterEmail = email;
         }
         if (typeof title === "undefined" || typeof posterId === "undefined" || typeof posterEmail === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (typeof title !== "string") {
-            return res.status(400).send({ error: "Invalid title" });
+            return res.status(400).send({ success: false, message: "Invalid title" });
         }
         if (typeof posterId !== "string" || !isValidObjectId(posterId)) {
-            return res.status(400).send({ error: "Invalid posterId" });
+            return res.status(400).send({ success: false, message: "Invalid posterId" });
         }
         if (typeof posterEmail !== "string" || !isValidEmail(posterEmail)) {
-            return res.status(400).send({ error: "Invalid posterEmail" });
+            return res.status(400).send({ success: false, message: "Invalid posterEmail" });
         }
         if (typeof content !== "undefined" && typeof content !== "string") {
-            return res.status(400).send({ error: "Invalid content" });
+            return res.status(400).send({ success: false, message: "Invalid content" });
         }
         if (typeof comments !== "undefined" && (!Array.isArray(comments) || !comments.every((o) => typeof o.commenterId === "string") || !comments.every((o) => typeof o.comment === "string"))) {
-            return res.status(400).send({ error: "Invalid comments" });
+            return res.status(400).send({ success: false, message: "Invalid comments" });
         }
         let newBlog = new Blog({
             title: title,
@@ -89,17 +89,17 @@ module.exports.postComment = async (req, res, next) => {
             email = req.user.email;
         }
         if (typeof comment === "undefined" || typeof blogId === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         if (typeof comment !== "string") {
-            return res.status(400).send({ error: "Invalid comment" });
+            return res.status(400).send({ success: false, message: "Invalid comment" });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         foundBlog.comments.push({ commenterId: _id, commenterEmail: email, comment: comment });
         let savedBlog = await foundBlog.save();
@@ -114,27 +114,27 @@ module.exports.updateComment = async (req, res, next) => {
         let { commentId, blogId } = req.params;
         let { _id } = req.user;
         if (typeof comment === "undefined" || typeof blogId === "undefined" || typeof commentId === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (!isValidObjectId(commentId)) {
-            return res.status(404).send({ error: "No comment found." });
+            return res.status(404).send({ success: false, message: "No comment found." });
         }
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         if (typeof comment !== "string") {
-            return res.status(400).send({ error: "Invalid comment" });
+            return res.status(400).send({ success: false, message: "Invalid comment" });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         let foundCommentIndex = foundBlog.comments.findIndex((comment) => comment._id.toString() === commentId);
         if (foundCommentIndex === -1) {
-            return res.status(404).send({ error: "Comment not found." });
+            return res.status(404).send({ success: false, message: "Comment not found." });
         }
         if (foundBlog.comments[foundCommentIndex].commenterId !== _id) {
-            return res.status(403).send({ error: "Action Forbidden" });
+            return res.status(403).send({ success: false, message: "Action Forbidden" });
         }
         foundBlog.comments[foundCommentIndex].comment = comment;
         let savedBlog = await foundBlog.save();
@@ -149,23 +149,23 @@ module.exports.updateBlog = async (req, res, next) => {
         let { _id } = req.user;
         let { title, content, comments } = req.body;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         if (typeof title !== "string") {
-            return res.status(400).send({ error: "Invalid title" });
+            return res.status(400).send({ success: false, message: "Invalid title" });
         }
         if (typeof content !== "undefined" && typeof content !== "string") {
-            return res.status(400).send({ error: "Invalid content" });
+            return res.status(400).send({ success: false, message: "Invalid content" });
         }
         if (typeof comments !== "undefined" && (!Array.isArray(comments) || !comments.every((o) => typeof o.commenterId === "string") || !comments.every((o) => typeof o.comment === "string"))) {
-            return res.status(400).send({ error: "Invalid comments" });
+            return res.status(400).send({ success: false, message: "Invalid comments" });
         }
         if (foundBlog.posterId !== _id) {
-            return res.status(400).send({ error: "You do not have permission to access this resource." });
+            return res.status(400).send({ success: false, message: "You do not have permission to access this resource." });
         }
         foundBlog.title = title || foundBlog.title;
         foundBlog.content = content || foundBlog.content;
@@ -181,14 +181,14 @@ module.exports.deleteBlog = async (req, res, next) => {
         let { _id, isAdmin } = req.user;
         let { blogId } = req.params;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         if (!isAdmin && foundBlog.posterId !== _id) {
-            return res.status(403).send({ error: "Action Forbidden" });
+            return res.status(403).send({ success: false, message: "Action Forbidden" });
         }
         let deletedBlog = await Blog.findByIdAndDelete(blogId);
         res.status(200).send({ success: true, message: "Blog deleted successfully", blog: deletedBlog });
@@ -201,21 +201,21 @@ module.exports.deleteComment = async (req, res, next) => {
         let { _id, isAdmin } = req.user;
         let { blogId, commentId } = req.params;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         if (!isValidObjectId(commentId)) {
-            return res.status(404).send({ error: "Comment not found." });
+            return res.status(404).send({ success: false, message: "Comment not found." });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
-            return res.status(404).send({ error: "No blog found." });
+            return res.status(404).send({ success: false, message: "No blog found." });
         }
         let foundCommentIndex = foundBlog.comments.findIndex((comment) => comment._id.toString() === commentId);
         if (foundCommentIndex === -1) {
-            return res.status(404).send({ error: "Comment not found." });
+            return res.status(404).send({ success: false, message: "Comment not found." });
         }
         if (!isAdmin && foundBlog.comments[foundCommentIndex].commenterId !== _id) {
-            return res.status(403).send({ error: "Action Forbidden" });
+            return res.status(403).send({ success: false, message: "Action Forbidden" });
         }
         let removedComments = foundBlog.comments.splice(foundCommentIndex, 1);
         let updatedBlog = await foundBlog.save();

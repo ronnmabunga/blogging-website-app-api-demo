@@ -6,16 +6,16 @@ module.exports.registerUser = async (req, res, next) => {
     try {
         let { username, email, password } = req.body;
         if (typeof email === "undefined" || typeof password === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (typeof email !== "string" || !isValidEmail(email)) {
-            return res.status(400).send({ error: "Invalid email" });
+            return res.status(400).send({ success: false, message: "Invalid email" });
         }
         if (typeof password !== "string" || !isValidPassword(password)) {
-            return res.status(400).send({ error: "Invalid password" });
+            return res.status(400).send({ success: false, message: "Invalid password" });
         }
         if (typeof username !== "undefined" && typeof username !== "string") {
-            return res.status(400).send({ error: "Invalid username" });
+            return res.status(400).send({ success: false, message: "Invalid username" });
         }
         let newUser = new User({
             username: username,
@@ -32,22 +32,22 @@ module.exports.loginUser = async (req, res, next) => {
     try {
         let { email, password } = req.body;
         if (typeof email === "undefined" || typeof password === "undefined") {
-            return res.status(400).send({ error: "Required inputs missing" });
+            return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (typeof email !== "string" || !isValidEmail(email)) {
-            return res.status(400).send({ error: "Invalid email" });
+            return res.status(400).send({ success: false, message: "Invalid email" });
         }
         if (typeof password !== "string") {
-            return res.status(400).send({ error: "Invalid password" });
+            return res.status(400).send({ success: false, message: "Invalid password" });
         }
         let foundUsers = await User.find({ email: email });
         if (foundUsers.length < 1) {
-            return res.status(401).send({ error: "Access denied. Please provide valid credentials." });
+            return res.status(401).send({ success: false, message: "Access denied. Please provide valid credentials." });
         }
         const foundUser = foundUsers[0];
         const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
         if (!isPasswordCorrect) {
-            return res.status(401).send({ error: "Access denied. Please provide valid credentials." });
+            return res.status(401).send({ success: false, message: "Access denied. Please provide valid credentials." });
         }
         const token = createToken({
             _id: foundUser._id,
@@ -66,7 +66,7 @@ module.exports.retrieveUserDetails = async (req, res, next) => {
         let { _id } = req.user;
         const foundUser = await User.findById(_id);
         if (!foundUser) {
-            return res.status(404).send({ error: "User data not found." });
+            return res.status(404).send({ success: false, message: "User data not found." });
         }
         foundUser.password = "";
         return res.status(200).send({ success: true, message: "User data found.", user: foundUser });
@@ -79,17 +79,17 @@ module.exports.updateUser = async (req, res, next) => {
         let { _id } = req.user;
         let foundUser = await User.findById(_id);
         if (!foundUser) {
-            return res.status(400).send({ error: "User not found." });
+            return res.status(404).send({ success: false, message: "User not found." });
         }
         let { username, email, password } = req.body;
         if (typeof email !== "undefined" && (typeof email !== "string" || !isValidEmail(email))) {
-            return res.status(400).send({ error: "Invalid email" });
+            return res.status(400).send({ success: false, message: "Invalid email" });
         }
         if (typeof password !== "undefined" && (typeof password !== "string" || !isValidPassword(password))) {
-            return res.status(400).send({ error: "Invalid password" });
+            return res.status(400).send({ success: false, message: "Invalid password" });
         }
         if (typeof username !== "undefined" && typeof username !== "string") {
-            return res.status(400).send({ error: "Invalid username" });
+            return res.status(400).send({ success: false, message: "Invalid username" });
         }
         let hashedPassword;
         if (typeof password !== "undefined") {
