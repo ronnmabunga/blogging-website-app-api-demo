@@ -7,7 +7,7 @@ require("dotenv").config();
 const MONGO_STRING = `${process.env.DEMO1_MONGO_STRING}`;
 chai.use(http);
 let app = require("../index");
-// logger.turnOffConsoleLogging();
+logger.turnOffConsoleLogging();
 
 describe(`API Tests`, function () {
     let userToken;
@@ -55,7 +55,7 @@ describe(`API Tests`, function () {
     });
     describe(`Tests on "/users"`, function () {
         describe(`Correct Input Tests`, function () {
-            it(`[201 | NoAuth | POST "/users/register" | Correct Inputs      ]`, (done) => {
+            it(`[201 | NoAuth   | POST "/users/register"       | Correct Inputs      ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -71,7 +71,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[200 | NoAuth | POST "/users/login"    | Correct Inputs      ]`, (done) => {
+            it(`[200 | NoAuth   | POST "/users/login"          | Correct Inputs      ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -87,7 +87,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[200 | Auth   | GET "/users"           |                     ]`, (done) => {
+            it(`[200 | Auth     | GET "/users"                 |                     ]`, (done) => {
                 chai.request(app)
                     .get("/users")
                     .set("Authorization", `Bearer ${adminToken}`)
@@ -99,7 +99,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[200 | Auth   | PATCH "/users"         | Correct Inputs      ]`, (done) => {
+            it(`[200 | Auth     | PATCH "/users"               | Correct Inputs      ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: "updatedmainuser@mail.com",
@@ -122,7 +122,7 @@ describe(`API Tests`, function () {
             });
         });
         describe(`Authorization Tests`, function () {
-            it(`[403 | Auth   | POST "/users/register" | Correct Inputs      ]`, (done) => {
+            it(`[403 | Auth     | POST "/users/register"       | Correct Inputs      ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -139,7 +139,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[403 | Auth   | POST "/users/login"    | Correct Inputs      ]`, (done) => {
+            it(`[403 | Auth     | POST "/users/login"          | Correct Inputs      ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -155,7 +155,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[403 | NoAuth | GET "/users"           |                     ]`, (done) => {
+            it(`[403 | NoAuth   | GET "/users"                 |                     ]`, (done) => {
                 chai.request(app)
                     .get("/users")
                     .end((err, res) => {
@@ -165,7 +165,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[403 | NoAuth | PATCH "/users"         | Correct Inputs      ]`, (done) => {
+            it(`[403 | NoAuth   | PATCH "/users"               | Correct Inputs      ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: "updatedmainuser@mail.com",
@@ -184,7 +184,7 @@ describe(`API Tests`, function () {
             });
         });
         describe(`Missing Input Tests`, function () {
-            it(`[201 | NoAuth | POST "/users/register" | Missing username    ]`, (done) => {
+            it(`[201 | NoAuth   | POST "/users/register"       | Missing username    ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -199,7 +199,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/register" | Missing email       ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Missing email       ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -214,7 +214,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/register" | Missing password    ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Missing password    ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -229,7 +229,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/login"    | Missing email       ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/login"          | Missing email       ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -243,7 +243,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/login"    | Missing password    ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/login"          | Missing password    ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -259,7 +259,7 @@ describe(`API Tests`, function () {
             });
         });
         describe(`Invalid Input Tests`, function () {
-            it(`[400 | NoAuth | POST "/users/register" | Non-string username ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Non-string username ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -275,7 +275,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/register" | Non-string email    ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Non-string email    ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -291,7 +291,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/register" | Invalid email       ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Invalid email       ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -307,7 +307,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/register" | Non-string password ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Non-string password ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -323,7 +323,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/register" | Invalid password    ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/register"       | Invalid password    ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
                     .type("json")
@@ -339,7 +339,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/login"    | Non-string email    ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/login"          | Non-string email    ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -354,7 +354,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/login"    | Invalid email       ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/login"          | Invalid email       ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -369,7 +369,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | NoAuth | POST "/users/login"    | Non-string password ]`, (done) => {
+            it(`[400 | NoAuth   | POST "/users/login"          | Non-string password ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -384,7 +384,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | Auth   | PATCH "/users"         | Non-string username ]`, (done) => {
+            it(`[400 | Auth     | PATCH "/users"               | Non-string username ]`, (done) => {
                 let updated = {
                     username: true,
                     email: "updatedmainuser@mail.com",
@@ -402,7 +402,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | Auth   | PATCH "/users"         | Non-string email    ]`, (done) => {
+            it(`[400 | Auth     | PATCH "/users"               | Non-string email    ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: true,
@@ -420,7 +420,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | Auth   | PATCH "/users"         | Invalid email       ]`, (done) => {
+            it(`[400 | Auth     | PATCH "/users"               | Invalid email       ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: "updatedmainuser@$mail.com",
@@ -438,7 +438,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | Auth   | PATCH "/users"         | Non-string password ]`, (done) => {
+            it(`[400 | Auth     | PATCH "/users"               | Non-string password ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: "updatedmainuser@mail.com",
@@ -456,7 +456,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[400 | Auth   | PATCH "/users"         | Invalid password    ]`, (done) => {
+            it(`[400 | Auth     | PATCH "/users"               | Invalid password    ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: "updatedmainuser@mail.com",
@@ -476,9 +476,8 @@ describe(`API Tests`, function () {
             });
         });
         describe(`Failure Tests`, function () {
-            /*
-            describe(`Not Yet Implemented`, function () {
-                it(`[409 | NoAuth | POST "/users/register" | Duplicate username  ]`, (done) => {
+            describe.skip(`Not Yet Implemented`, function () {
+                it(`[409 | NoAuth   | POST "/users/register" | Duplicate username  ]`, (done) => {
                     chai.request(app)
                         .post("/users/register")
                         .type("json")
@@ -494,7 +493,7 @@ describe(`API Tests`, function () {
                             done();
                         });
                 });
-                it(`[409 | NoAuth | POST "/users/register" | Duplicate email     ]`, (done) => {
+                it(`[409 | NoAuth   | POST "/users/register" | Duplicate email     ]`, (done) => {
                     chai.request(app)
                         .post("/users/register")
                         .type("json")
@@ -511,8 +510,7 @@ describe(`API Tests`, function () {
                         });
                 });
             });
-            */
-            it(`[401 | NoAuth | POST "/users/login"    | Inexistent email    ]`, (done) => {
+            it(`[401 | NoAuth   | POST "/users/login"          | Inexistent email    ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -527,7 +525,7 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[401 | NoAuth | POST "/users/login"    | Incorrect password  ]`, (done) => {
+            it(`[401 | NoAuth   | POST "/users/login"          | Incorrect password  ]`, (done) => {
                 chai.request(app)
                     .post("/users/login")
                     .type("json")
@@ -544,4 +542,262 @@ describe(`API Tests`, function () {
             });
         });
     });
+    describe(`Tests on "/messages"`, function () {
+        let messageId1;
+        let messageId2;
+        describe(`Correct Input Tests`, function () {
+            it(`[200 | Admin    | GET "/messages"              |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/messages")
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.is.oneOf(["No messages found.", "Messages retrieved."]);
+                        chai.expect(res.body).to.have.property("messages").that.is.a("array");
+                        done();
+                    });
+            });
+            it(`[200 | NoAuth   | POST "/messages"             | Correct Inputs      ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 1",
+                        email: "name1@mail.com",
+                        message: "Test Message 1",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Message created.");
+                        chai.expect(res.body).to.have.property("newMessage").that.is.a("object");
+                        messageId1 = res.body.newMessage._id;
+                        done();
+                    });
+            });
+            it(`[200 | Auth     | POST "/messages"             | Correct Inputs      ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 2",
+                        email: "name2@mail.com",
+                        message: "Test Message 2",
+                    })
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Message created.");
+                        chai.expect(res.body).to.have.property("newMessage").that.is.a("object");
+                        messageId2 = res.body.newMessage._id;
+                        done();
+                    });
+            });
+            it(`[200 | Admin    | patch "/messages/:messageId" | Valid messageId     ]`, (done) => {
+                chai.request(app)
+                    .patch(`/messages/${messageId1}`)
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Message updated successfully");
+                        chai.expect(res.body).to.have.property("foundMessage").that.is.a("object");
+                        chai.expect(res.body.foundMessage).to.have.property("isRead").that.equals(true);
+                        done();
+                    });
+            });
+        });
+        describe(`Authorization Tests`, function () {
+            it(`[403 | NonAdmin | GET "/messages"              |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/messages")
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                        done();
+                    });
+            });
+            it(`[401 | NoAuth   | GET "/messages"              |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/messages")
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(401);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Authentication Failed. Please provide valid credentials.");
+                        done();
+                    });
+            });
+            it(`[403 | NonAdmin | patch "/messages/:messageId" | Valid id            ]`, (done) => {
+                chai.request(app)
+                    .patch(`/messages/${messageId2}`)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
+                        done();
+                    });
+            });
+            it(`[401 | NoAuth   | patch "/messages/:messageId" | Valid id            ]`, (done) => {
+                chai.request(app)
+                    .patch(`/messages/${messageId2}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(401);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Authentication Failed. Please provide valid credentials.");
+                        done();
+                    });
+            });
+        });
+        describe(`Missing Input Tests`, function () {
+            it(`[201 | NoAuth   | POST "/messages"             | Missing name        ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        email: "name3@mail.com",
+                        message: "Test Message 3",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Message created.");
+                        chai.expect(res.body).to.have.property("newMessage").that.is.a("object");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth   | POST "/messages"             | Missing email       ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 4",
+                        message: "Test Message 4",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Required inputs missing");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth   | POST "/messages"             | Missing message     ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 5",
+                        email: "name5@mail.com",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Required inputs missing");
+                        done();
+                    });
+            });
+        });
+        describe(`Invalid Input Tests`, function () {
+            it(`[400 | NoAuth   | POST "/messages"             | Non-string name     ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: true,
+                        email: "name6@mail.com",
+                        message: "Test Message 6",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid name");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth   | POST "/messages"             | Non-string message  ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 7",
+                        email: "name7@mail.com",
+                        message: true,
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid message");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth   | POST "/messages"             | Non-string email    ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 8",
+                        email: true,
+                        message: "Test Message 8",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | NoAuth   | POST "/messages"             | Invalid email       ]`, (done) => {
+                chai.request(app)
+                    .post("/messages")
+                    .type("json")
+                    .send({
+                        name: "Name 9",
+                        email: "name9@$mail.com",
+                        message: "Test Message 9",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | Admin    | patch "/messages/:messageId" | Invalid ObjectId    ]`, (done) => {
+                chai.request(app)
+                    .patch(`/messages/a`)
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid ID");
+                        done();
+                    });
+            });
+            it(`[404 | Admin    | patch "/messages/:messageId" | Inexistent id       ]`, (done) => {
+                chai.request(app)
+                    .patch(`/messages/6709168f57260bef131dfd1d`)
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(404);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("No message found.");
+                        done();
+                    });
+            });
+        });
+    });
+
+    /*
+    describe(`Tests on "/blogs"`, function () {
+        describe(`Correct Input Tests`, function () {});
+        describe(`Authorization Tests`, function () {});
+        describe(`Missing Input Tests`, function () {});
+        describe(`Invalid Input Tests`, function () {});
+        describe(`Failure Tests`, function () {});
+    });
+    */
 });

@@ -34,7 +34,7 @@ module.exports.postMessage = async (req, res, next) => {
             message: message,
         });
         let savedMessage = await newMessage.save();
-        res.status(201).send({ success: true, message: "Message created.", message: savedMessage });
+        res.status(201).send({ success: true, message: "Message created.", newMessage: savedMessage });
     } catch (error) {
         next(error);
     }
@@ -46,7 +46,7 @@ module.exports.markMessageAsRead = async (req, res, next) => {
             return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (!isValidObjectId(messageId)) {
-            return res.status(404).send({ success: false, message: "No message found." });
+            return res.status(400).send({ success: false, message: "Invalid ID" });
         }
         let foundMessage = await Message.findById(messageId);
         if (!foundMessage) {
@@ -54,7 +54,7 @@ module.exports.markMessageAsRead = async (req, res, next) => {
         }
         foundMessage.isRead = true;
         let updatedMessage = await foundMessage.save();
-        res.status(200).send({ success: true, message: "Message updated successfully", message: updatedMessage });
+        res.status(200).send({ success: true, message: "Message updated successfully", foundMessage: updatedMessage });
     } catch (error) {
         next(error);
     }
