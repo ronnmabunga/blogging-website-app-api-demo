@@ -28,15 +28,15 @@ app.use((err, req, res, next) => {
     logger.error(`Error encountered: ${err.message}`);
     const statusCode = err.status || 500;
     const errorMessage = err.message || "An unexpected error has occurred.";
-    res.status(statusCode).send({ error: errorMessage });
+    res.status(statusCode).send({ success: false, message: errorMessage });
 });
 
 if (require.main === module) {
     connectDB(MONGO_STRING);
     app.listen(PORT, () => {
-        logger.info(`API is now online on port ${PORT}`);
+        logger.info(`Blog API: Now online on port ${PORT}`);
     });
 } else {
-    logger.turnOffConsoleLogging();
+    // logger.turnOffConsoleLogging();
     module.exports = app;
 }
