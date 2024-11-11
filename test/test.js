@@ -383,44 +383,164 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
+            it(`[400 | Auth   | PATCH "/users"         | Non-string username ]`, (done) => {
+                let updated = {
+                    username: true,
+                    email: "updatedmainuser@mail.com",
+                    password: "pAs$w0rd",
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid username");
+                        done();
+                    });
+            });
+            it(`[400 | Auth   | PATCH "/users"         | Non-string email    ]`, (done) => {
+                let updated = {
+                    username: "UpdatedMainUser",
+                    email: true,
+                    password: "pAs$w0rd",
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | Auth   | PATCH "/users"         | Invalid email       ]`, (done) => {
+                let updated = {
+                    username: "UpdatedMainUser",
+                    email: "updatedmainuser@$mail.com",
+                    password: "pAs$w0rd",
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid email");
+                        done();
+                    });
+            });
+            it(`[400 | Auth   | PATCH "/users"         | Non-string password ]`, (done) => {
+                let updated = {
+                    username: "UpdatedMainUser",
+                    email: "updatedmainuser@mail.com",
+                    password: true,
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid password");
+                        done();
+                    });
+            });
+            it(`[400 | Auth   | PATCH "/users"         | Invalid password    ]`, (done) => {
+                let updated = {
+                    username: "UpdatedMainUser",
+                    email: "updatedmainuser@mail.com",
+                    password: "password",
+                };
+                chai.request(app)
+                    .patch("/users")
+                    .type("json")
+                    .send(updated)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(400);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Invalid password");
+                        done();
+                    });
+            });
         });
         describe(`Failure Tests`, function () {
-            // Inexistent email
-            // Incorrect password
-            // describe(`Not Yet Implemented`, function () {
-            //     it(`[409 | NoAuth | POST "/users/register" | Duplicate username  ]`, (done) => {
-            //         chai.request(app)
-            //             .post("/users/register")
-            //             .type("json")
-            //             .send({
-            //                 username: "NewUser",
-            //                 email: "newuser10@mail.com",
-            //                 password: "pAs$w0rd",
-            //             })
-            //             .end((err, res) => {
-            //                 chai.expect(res.status).to.equal(409);
-            //                 chai.expect(res.body).to.have.property("success").that.equals(false);
-            //                 chai.expect(res.body).to.have.property("message").that.equals("Duplicate username found");
-            //                 done();
-            //             });
-            //     });
-            //     it(`[409 | NoAuth | POST "/users/register" | Duplicate email     ]`, (done) => {
-            //         chai.request(app)
-            //             .post("/users/register")
-            //             .type("json")
-            //             .send({
-            //                 username: "NewUser10",
-            //                 email: "newuser@mail.com",
-            //                 password: "pAs$w0rd",
-            //             })
-            //             .end((err, res) => {
-            //                 chai.expect(res.status).to.equal(409);
-            //                 chai.expect(res.body).to.have.property("success").that.equals(false);
-            //                 chai.expect(res.body).to.have.property("message").that.equals("Duplicate email found");
-            //                 done();
-            //             });
-            //     });
-            // });
+            /*
+            describe(`Not Yet Implemented`, function () {
+                it(`[409 | NoAuth | POST "/users/register" | Duplicate username  ]`, (done) => {
+                    chai.request(app)
+                        .post("/users/register")
+                        .type("json")
+                        .send({
+                            username: "NewUser",
+                            email: "newuser10@mail.com",
+                            password: "pAs$w0rd",
+                        })
+                        .end((err, res) => {
+                            chai.expect(res.status).to.equal(409);
+                            chai.expect(res.body).to.have.property("success").that.equals(false);
+                            chai.expect(res.body).to.have.property("message").that.equals("Duplicate username found");
+                            done();
+                        });
+                });
+                it(`[409 | NoAuth | POST "/users/register" | Duplicate email     ]`, (done) => {
+                    chai.request(app)
+                        .post("/users/register")
+                        .type("json")
+                        .send({
+                            username: "NewUser10",
+                            email: "newuser@mail.com",
+                            password: "pAs$w0rd",
+                        })
+                        .end((err, res) => {
+                            chai.expect(res.status).to.equal(409);
+                            chai.expect(res.body).to.have.property("success").that.equals(false);
+                            chai.expect(res.body).to.have.property("message").that.equals("Duplicate email found");
+                            done();
+                        });
+                });
+            });
+            */
+            it(`[401 | NoAuth | POST "/users/login"    | Inexistent email    ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "olduser@mail.com",
+                        password: "pAs$w0rd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(401);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Access denied. Please provide valid credentials.");
+                        done();
+                    });
+            });
+            it(`[401 | NoAuth | POST "/users/login"    | Incorrect password  ]`, (done) => {
+                chai.request(app)
+                    .post("/users/login")
+                    .type("json")
+                    .send({
+                        email: "newuser@mail.com",
+                        password: "pAs$w0rdd",
+                    })
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(401);
+                        chai.expect(res.body).to.have.property("success").that.equals(false);
+                        chai.expect(res.body).to.have.property("message").that.equals("Access denied. Please provide valid credentials.");
+                        done();
+                    });
+            });
         });
     });
 });
