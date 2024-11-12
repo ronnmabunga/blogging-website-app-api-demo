@@ -16,7 +16,7 @@ module.exports.getBlogById = async (req, res, next) => {
     try {
         let { blogId } = req.params;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ success: false, message: "No blog found." });
+            return res.status(400).send({ success: false, message: "No blog found." });
         }
         const foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
@@ -201,10 +201,10 @@ module.exports.deleteComment = async (req, res, next) => {
         let { _id, isAdmin } = req.user;
         let { blogId, commentId } = req.params;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ success: false, message: "No blog found." });
+            return res.status(400).send({ success: false, message: "No blog found." });
         }
         if (!isValidObjectId(commentId)) {
-            return res.status(404).send({ success: false, message: "Comment not found." });
+            return res.status(400).send({ success: false, message: "Comment not found." });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {

@@ -23,7 +23,7 @@ const validateLoggedIn = (req, res, next) => {
     try {
         if (!req.user) {
             logger.info("User not logged in. User Authorization Failed.");
-            return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
+            return res.status(401).send({ success: false, message: "You do not have permission to access this resource." });
         }
         next();
     } catch (error) {
