@@ -44,6 +44,7 @@ module.exports.postBlog = async (req, res, next) => {
         let { title, posterId, posterEmail, content, comments } = req.body;
         let { _id, email } = req.user;
         if (typeof posterId === "undefined" || typeof posterEmail === "undefined") {
+            // If not provided, this means that it is a new post and not a data transfer
             posterId = _id;
             posterEmail = email;
         }
@@ -92,7 +93,7 @@ module.exports.postComment = async (req, res, next) => {
             return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ success: false, message: "No blog found." });
+            return res.status(400).send({ success: false, message: "No blog found." });
         }
         if (typeof comment !== "string") {
             return res.status(400).send({ success: false, message: "Invalid comment" });
@@ -117,10 +118,10 @@ module.exports.updateComment = async (req, res, next) => {
             return res.status(400).send({ success: false, message: "Required inputs missing" });
         }
         if (!isValidObjectId(commentId)) {
-            return res.status(404).send({ success: false, message: "No comment found." });
+            return res.status(400).send({ success: false, message: "No comment found." });
         }
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ success: false, message: "No blog found." });
+            return res.status(400).send({ success: false, message: "No blog found." });
         }
         if (typeof comment !== "string") {
             return res.status(400).send({ success: false, message: "Invalid comment" });
@@ -149,13 +150,13 @@ module.exports.updateBlog = async (req, res, next) => {
         let { _id } = req.user;
         let { title, content, comments } = req.body;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ success: false, message: "No blog found." });
+            return res.status(400).send({ success: false, message: "No blog found." });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
             return res.status(404).send({ success: false, message: "No blog found." });
         }
-        if (typeof title !== "string") {
+        if (typeof title !== "undefined" && typeof title !== "string") {
             return res.status(400).send({ success: false, message: "Invalid title" });
         }
         if (typeof content !== "undefined" && typeof content !== "string") {
@@ -165,7 +166,7 @@ module.exports.updateBlog = async (req, res, next) => {
             return res.status(400).send({ success: false, message: "Invalid comments" });
         }
         if (foundBlog.posterId !== _id) {
-            return res.status(400).send({ success: false, message: "You do not have permission to access this resource." });
+            return res.status(403).send({ success: false, message: "You do not have permission to access this resource." });
         }
         foundBlog.title = title || foundBlog.title;
         foundBlog.content = content || foundBlog.content;
@@ -181,7 +182,7 @@ module.exports.deleteBlog = async (req, res, next) => {
         let { _id, isAdmin } = req.user;
         let { blogId } = req.params;
         if (!isValidObjectId(blogId)) {
-            return res.status(404).send({ success: false, message: "No blog found." });
+            return res.status(400).send({ success: false, message: "No blog found." });
         }
         let foundBlog = await Blog.findById(blogId);
         if (!foundBlog) {
