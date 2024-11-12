@@ -1,4 +1,5 @@
 name: Run Mocha Tests
+
 on:
     push:
         branches:
@@ -6,21 +7,26 @@ on:
     pull_request:
         branches:
             - main
+
 jobs:
     test:
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "21.7.1"
-            - name: Install dependencies
-              run: npm install
-            - name: Run Mocha tests
+
+            - name: Build Docker image
+              run: docker build -t api-test .
+
+            - name: Run Mocha tests in Docker
               env:
                   DEMO1_PORT: ${{ secrets.DEMO1_PORT }}
                   DEMO1_MONGO_STRING: ${{ secrets.DEMO1_MONGO_STRING }}
                   DEMO1_JWT_SECRET_KEY: ${{ secrets.DEMO1_JWT_SECRET_KEY }}
-              run: npm test
+              run: |
+                  docker run \
+                    -e DEMO1_PORT=$DEMO1_PORT \
+                    -e DEMO1_MONGO_STRING=$DEMO1_MONGO_STRING \
+                    -e DEMO1_JWT_SECRET_KEY=$DEMO1_JWT_SECRET_KEY \
+                    api-test
