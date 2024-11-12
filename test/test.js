@@ -77,7 +77,7 @@ describe(`API Tests`, function () {
         await disconnectDB();
         logger.info("Testing ends");
     });
-    describe.skip(`Tests on "/users"`, function () {
+    describe(`Tests on "/users"`, function () {
         describe(`Correct Input Tests`, function () {
             it(`[201 | NoAuth   | POST "/users/register"       | Correct Inputs      ]`, (done) => {
                 chai.request(app)
@@ -145,7 +145,7 @@ describe(`API Tests`, function () {
                     });
             });
         });
-        describe(`Authorization Tests`, function () {
+        describe(`Auth Tests`, function () {
             it(`[403 | Auth     | POST "/users/register"       | Correct Inputs      ]`, (done) => {
                 chai.request(app)
                     .post("/users/register")
@@ -179,17 +179,17 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
-            it(`[403 | NoAuth   | GET "/users"                 |                     ]`, (done) => {
+            it(`[401 | NoAuth   | GET "/users"                 |                     ]`, (done) => {
                 chai.request(app)
                     .get("/users")
                     .end((err, res) => {
-                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.status).to.equal(401);
                         chai.expect(res.body).to.have.property("success").that.equals(false);
                         chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
                         done();
                     });
             });
-            it(`[403 | NoAuth   | PATCH "/users"               | Correct Inputs      ]`, (done) => {
+            it(`[401 | NoAuth   | PATCH "/users"               | Correct Inputs      ]`, (done) => {
                 let updated = {
                     username: "UpdatedMainUser",
                     email: "updatedmainuser@mail.com",
@@ -200,7 +200,7 @@ describe(`API Tests`, function () {
                     .type("json")
                     .send(updated)
                     .end((err, res) => {
-                        chai.expect(res.status).to.equal(403);
+                        chai.expect(res.status).to.equal(401);
                         chai.expect(res.body).to.have.property("success").that.equals(false);
                         chai.expect(res.body).to.have.property("message").that.equals("You do not have permission to access this resource.");
                         done();
@@ -566,7 +566,7 @@ describe(`API Tests`, function () {
             });
         });
     });
-    describe.skip(`Tests on "/messages"`, function () {
+    describe(`Tests on "/messages"`, function () {
         describe(`Correct Input Tests`, function () {
             it(`[200 | Admin    | GET "/messages"              |                     ]`, (done) => {
                 chai.request(app)
@@ -629,7 +629,7 @@ describe(`API Tests`, function () {
                     });
             });
         });
-        describe(`Authorization Tests`, function () {
+        describe(`Auth Tests`, function () {
             it(`[403 | NonAdmin | GET "/messages"              |                     ]`, (done) => {
                 chai.request(app)
                     .get("/messages")
@@ -797,6 +797,8 @@ describe(`API Tests`, function () {
                         done();
                     });
             });
+        });
+        describe(`Failure Tests`, function () {
             it(`[404 | Admin    | patch "/messages/:messageId" | Inexistent id       ]`, (done) => {
                 chai.request(app)
                     .patch(`/messages/6709168f57260bef131dfd1d`)
@@ -810,14 +812,167 @@ describe(`API Tests`, function () {
             });
         });
     });
-
-    /*
     describe(`Tests on "/blogs"`, function () {
-        describe(`Correct Input Tests`, function () {});
-        describe(`Authorization Tests`, function () {});
-        describe(`Missing Input Tests`, function () {});
-        describe(`Invalid Input Tests`, function () {});
-        describe(`Failure Tests`, function () {});
+        describe(`Correct Input Tests`, function () {
+            it(`[200 | Auth     | POST "/blogs"                | Full Correct Inputs ]`, (done) => {
+                chai.request(app)
+                    .post("/blogs")
+                    .type("json")
+                    .send({
+                        title: "Title 1",
+                        posterId: "670916b857260bef131dfd21",
+                        posterEmail: "user2@mail.com",
+                        content: "Content 1",
+                        comments: [{ commenterId: "670916b857260bef131dfd21", commenterEmail: "user2@mail.com", comment: "Comment 1.1" }],
+                    })
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Blog created.");
+                        chai.expect(res.body).to.have.property("blog").that.is.a("object");
+                        blogId1 = res.body.blog._id;
+                        done();
+                    });
+            });
+            it(`[200 | Auth     | POST "/blogs"                | Min Correct Inputs  ]`, (done) => {
+                chai.request(app)
+                    .post("/blogs")
+                    .type("json")
+                    .send({
+                        title: "Title 2",
+                    })
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(201);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Blog created.");
+                        chai.expect(res.body).to.have.property("blog").that.is.a("object");
+                        blogId2 = res.body.blog._id;
+                        done();
+                    });
+            });
+            it(`[200 | NoAuth   | GET "/blogs/all"             |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/blogs/all")
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.is.oneOf(["No blogs found.", "Blogs retrieved."]);
+                        chai.expect(res.body).to.have.property("blogs").that.is.a("array");
+                        done();
+                    });
+            });
+            it(`[200 | Auth     | GET "/blogs/all"             |                     ]`, (done) => {
+                chai.request(app)
+                    .get("/blogs/all")
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.is.oneOf(["No blogs found.", "Blogs retrieved."]);
+                        chai.expect(res.body).to.have.property("blogs").that.is.a("array");
+                        done();
+                    });
+            });
+            it(`[200 | NoAuth   | GET "/blogs/:blogId"         | Valid id            ]`, (done) => {
+                chai.request(app)
+                    .get(`/blogs/${blogId1}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Blog retrieved.");
+                        chai.expect(res.body).to.have.property("blog").that.is.a("object");
+                        done();
+                    });
+            });
+            it(`[200 | Auth     | GET "/blogs/:blogId"         | Valid id            ]`, (done) => {
+                chai.request(app)
+                    .get(`/blogs/${blogId2}`)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.equals("Blog retrieved.");
+                        chai.expect(res.body).to.have.property("blog").that.is.a("object");
+                        done();
+                    });
+            });
+            it(`[200 | Auth     | GET "/blogs"                 |                     ]`, (done) => {
+                chai.request(app)
+                    .get(`/blogs`)
+                    .set("Authorization", `Bearer ${userToken}`)
+                    .end((err, res) => {
+                        chai.expect(res.status).to.equal(200);
+                        chai.expect(res.body).to.have.property("success").that.equals(true);
+                        chai.expect(res.body).to.have.property("message").that.is.oneOf(["No blogs found.", "Blogs retrieved."]);
+                        chai.expect(res.body).to.have.property("blogs").that.is.a("array");
+                        done();
+                    });
+            });
+            // Update Post 200 Auth PATCH "/blogs/:blogId" Correct Inputs
+            // Delete Post 200 Auth DELETE "/blogs/:blogId" Correct User
+            // Delete Post 200 Admin DELETE "/blogs/:blogId"
+            // Post Comment 201 Auth POST "/blogs/:blogId" Correct Inputs
+            // Post Comment 201 NoAuth POST "/blogs/:blogId" Correct Inputs
+            // Update Comment 200 Auth PATCH "/blogs/:blogId/:commentId" Correct Inputs
+            // Delete Comment 200 Auth DELETE "/blogs/:blogId/:commentId" Correct User
+            // Delete Comment 200 Admin DELETE "/blogs/:blogId/:commentId" Correct User
+        });
+        describe(`Auth Tests`, function () {
+            // Get Blog 401 NoAuth GET "/blogs" Correct Inputs
+            // Post Blog 401 NoAuth POST "/blogs" Full Correct Inputs
+            // Update Post 403 Auth PATCH "/blogs/:blogId" Incorrect User
+            // Update Post 401 NoAuth PATCH "/blogs/:blogId" Correct Inputs
+            // Delete Post 403 Auth DELETE "/blogs/:blogId" Incorrect User
+            // Delete Post 401 NoAuth DELETE "/blogs/:blogId"
+            // Update Comment 403 Auth PATCH "/blogs/:blogId/:commentId" Incorrect User
+            // Update Comment 401 NoAuth PATCH "/blogs/:blogId/:commentId" Correct Inputs
+            // Delete Comment 403 Auth DELETE "/blogs/:blogId/:commentId" Incorrect User
+            // Delete Comment 401 NoAuth DELETE "/blogs/:blogId/:commentId"
+        });
+        describe(`Missing Input Tests`, function () {
+            // Post Blog 400 Auth POST "/blogs" Missing title
+            // Post Blog 201 Auth POST "/blogs" Missing posterId
+            // Post Blog 201 Auth POST "/blogs" Missing posterEmail
+            // Post Blog 201 Auth POST "/blogs" Missing content
+            // Post Blog 201 Auth POST "/blogs" Missing comments
+            // Post Comment 400 NoAuth POST "/blogs/:blogId" Missing comment
+            // Update Comment 400 Auth PATCH "/blogs/:blogId" Missing comment
+        });
+        describe(`Invalid Input Tests`, function () {
+            // Post Blog 400 Auth POST "/blogs" Non-string title
+            // Post Blog 400 Auth POST "/blogs" Non-string posterId
+            // Post Blog 400 Auth POST "/blogs" Invalid poster ObjectId
+            // Post Blog 400 Auth POST "/blogs" Non-string posterEmail
+            // Post Blog 400 Auth POST "/blogs" Invalid posterEmail
+            // Post Blog 400 Auth POST "/blogs" Non-string content
+            // Post Blog 400 Auth POST "/blogs" Non-array comments
+            // Post Blog 400 Auth POST "/blogs" Invalid comment entries
+            // Get Blog 400 NoAuth GET "/blogs/:blogId" Invalid ObjectId
+            // Update Post 400 Auth PATCH "/blogs/:blogId" Invalid ObjectId
+            // Update Post 400 Auth PATCH "/blogs/:blogId" Non-string title
+            // Update Post 400 Auth PATCH "/blogs/:blogId" Non-string content
+            // Update Post 400 Auth PATCH "/blogs/:blogId" Non-array comments
+            // Update Post 400 Auth PATCH "/blogs/:blogId" Non-array comments
+            // Delete Post 400 Admin DELETE "/blogs/:blogId" Invalid comment entries
+            // Post Comment 400 Auth POST "/blogs/:blogId" Invalid blog ObjectId
+            // Post Comment 400 Auth POST "/blogs/:blogId" Non-string comment
+            // Update Comment 400 Auth PATCH "/blogs/:blogId/:commentId" Invalid blog ObjectId
+            // Update Comment 400 Auth PATCH "/blogs/:blogId/:commentId" Invalid comment ObjectId
+            // Update Comment 400 Auth PATCH "/blogs/:blogId:commentId" Non-string comment
+            // Delete Comment 400 Admin DELETE "/blogs/:blogId/:commentId" Invalid blog ObjectId
+            // Delete Comment 400 Admin DELETE "/blogs/:blogId/:commentId" Invalid comment ObjectId
+        });
+        describe(`Failure Tests`, function () {
+            // Get Blog 404 NoAuth GET "/blogs/:blogId" Inexistent id
+            // Update Post 404 Auth PATCH "/blogs/:blogId" Inexistent id
+            // Delete Post 404 Admin DELETE "/blogs/:blogId" Inexistent id
+            // Post Comment 404 NoAuth POST "/blogs/:blogId" Inexistent id
+            // Update Comment 404 Auth PATCH "/blogs/:blogId/:commentId" Inexistent blog id
+            // Update Comment 404 Auth PATCH "/blogs/:blogId/:commentId" Inexistent comment id
+            // Delete Comment 404 Admin DELETE "/blogs/:blogId/:commentId" Inexistent blog id
+            // Delete Comment 404 Admin DELETE "/blogs/:blogId/:commentId" Inexistent comment id
+        });
     });
-    */
 });
